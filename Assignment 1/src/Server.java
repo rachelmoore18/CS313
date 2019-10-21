@@ -1,49 +1,50 @@
+//
+// Source code recreated from a .class file by IntelliJ IDEA
+// (powered by Fernflower decompiler)
+//
+
 import java.io.IOException;
-import java.net.*;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.net.ServerSocket;
+import java.net.Socket;
 
 public class Server {
-
-    private DatagramSocket socket;
-    private byte[] buffer;
+    private ServerSocket server = new ServerSocket(5000);
+    private Socket socket;
 
     public Server() throws IOException {
-
         System.out.println("Waiting for client");
-
-        socket = new DatagramSocket(5000);
-        buffer = new byte[512];
-
-
-        if(socket.isConnected()){
+        this.socket = this.server.accept();
+        if (this.socket.isConnected()) {
             System.out.println("Found client");
         }
+
     }
 
-    public void ServerReceive() throws IOException, SocketException, NumberFormatException {
-        DatagramPacket request1 = new DatagramPacket(buffer, buffer.length);
-        socket.receive(request1);
-        InetAddress clientAddress = request1.getAddress();
-        int clientPort = request1.getPort();
-        String messageOne = new String(request1.getData());
-
+    public void ServerReceive() throws IOException, ClassNotFoundException, NumberFormatException {
+        ObjectInputStream streamI = new ObjectInputStream(this.socket.getInputStream());
+        String messageOne = (String)streamI.readObject();
+        String messageTwo = (String)streamI.readObject();
         System.out.println("Message Received: " + messageOne);
-
-        String msg1 = messageOne.toUpperCase();
-        DatagramPacket response1 = new DatagramPacket(msg1.getBytes(), msg1.getBytes().length, clientAddress, clientPort);
-        socket.send(response1);
-
-        socket.close();
+        System.out.println("Message Received: " + messageTwo);
+        ObjectOutputStream streamO = new ObjectOutputStream(this.socket.getOutputStream());
+        streamO.writeObject(messageOne.toUpperCase());
+        int intMessage = Integer.parseInt(messageTwo);
+        streamO.writeObject(intMessage * 2);
+        streamI.close();
+        streamO.close();
     }
 
-    public static void main(String[] args){
+    public static void main(String[] args) {
         try {
             Server server = new Server();
 
-            while(true){
+            while(true) {
                 server.ServerReceive();
             }
-        }catch(Exception e){e.printStackTrace();}
+        } catch (Exception var2) {
+            var2.printStackTrace();
+        }
     }
-
-
 }
