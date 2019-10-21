@@ -1,45 +1,37 @@
 import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.net.InetAddress;
-import java.net.*;
+import java.net.Socket;
 
 public class Client {
 
-    String hostname = "127.0.0.1";
-    int port = 5000;
+    private Socket socket = null;
 
-    private DatagramSocket socket = null;
-    private InetAddress IPAddress = null;
-    private byte[] buffer = null;
-
-
-
-    public Client() throws IOException, SocketTimeoutException, InterruptedException {
+    public Client() throws IOException {
         System.out.println("Client Started");
-        IPAddress = InetAddress.getByName(hostname);
-        socket = new DatagramSocket();
-        buffer = new byte[512];
+        socket = new Socket("127.0.0.1", 5000);
     }
 
-    public void SendPacket() throws IOException {
-        String First = "text";
-        DatagramPacket request1 = new DatagramPacket( First.getBytes(), First.getBytes().length, IPAddress, port);
-        socket.send(request1);
-
+    public void SendObject(Object first, Object second) throws IOException{
+        ObjectOutputStream oStream = new ObjectOutputStream(socket.getOutputStream());
+        oStream.writeObject(first);
+        oStream.writeObject(second);
     }
 
     public void ClientReceive() throws IOException, ClassNotFoundException {
-        DatagramPacket response = new DatagramPacket(buffer, buffer.length);
-        socket.receive(response);
-        String messageOne = new String(buffer, 0, response.getLength());
-
+        ObjectInputStream streamI = new ObjectInputStream(socket.getInputStream());
+        String messageOne = (String) streamI.readObject();
+        Integer messageTwo = (Integer) streamI.readObject();
         System.out.println("Message Received: " + messageOne);
+        System.out.println("Message Received: " + messageTwo);
     }
 
 
     public static void main(String[] args){
         try {
             Client client = new Client();
-            client.SendPacket();
+            client.SendObject("text", "220");
             client.ClientReceive();
         }catch(Exception e){e.printStackTrace();}
     }
