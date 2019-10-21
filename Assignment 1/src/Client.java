@@ -34,7 +34,3 @@ public class Client {
             client.SendObject("text", "220");
             client.ClientReceive();
         }catch(Exception e){e.printStackTrace();}
-    }
-
-
-}
