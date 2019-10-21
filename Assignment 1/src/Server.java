@@ -20,13 +20,17 @@ public class Server {
         }
     }
 
-    public void ServerReceive() throws IOException, ClassNotFoundException {
+    public void ServerReceive() throws IOException, ClassNotFoundException, NumberFormatException {
         ObjectInputStream streamI = new ObjectInputStream(socket.getInputStream());
-        String message = (String) streamI.readObject();
-        System.out.println("Message Received: " + message);
+        String messageOne = (String) streamI.readObject();
+        String messageTwo = (String) streamI.readObject();
+        System.out.println("Message Received: " + messageOne);
+        System.out.println("Message Received: " + messageTwo);
 
         ObjectOutputStream streamO = new ObjectOutputStream(socket.getOutputStream());
-        streamO.writeObject(message.toUpperCase());
+        streamO.writeObject(messageOne.toUpperCase());
+        int intMessage = Integer.parseInt(messageTwo);
+        streamO.writeObject(intMessage*2);
 
         streamI.close();
         streamO.close();
