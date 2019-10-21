@@ -1,35 +1,38 @@
 import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.net.ServerSocket;
-import java.net.Socket;
+import java.net.*;
 
 public class Server {
 
-    private ServerSocket server;
-    private Socket socket;
+    private DatagramSocket socket;
+    private byte[] buffer;
 
     public Server() throws IOException {
-        server = new ServerSocket(5000);
+
         System.out.println("Waiting for client");
 
-        socket = server.accept();
+        socket = new DatagramSocket(5000);
+        buffer = new byte[512];
+
 
         if(socket.isConnected()){
             System.out.println("Found client");
         }
     }
 
-    public void ServerReceive() throws IOException, ClassNotFoundException {
-        ObjectInputStream streamI = new ObjectInputStream(socket.getInputStream());
-        String message = (String) streamI.readObject();
-        System.out.println("Message Received: " + message);
+    public void ServerReceive() throws IOException, SocketException, NumberFormatException {
+        DatagramPacket request1 = new DatagramPacket(buffer, buffer.length);
+        socket.receive(request1);
+        InetAddress clientAddress = request1.getAddress();
+        int clientPort = request1.getPort();
+        String messageOne = new String(request1.getData());
 
-        ObjectOutputStream streamO = new ObjectOutputStream(socket.getOutputStream());
-        streamO.writeObject(message.toUpperCase());
+        System.out.println("Message Received: " + messageOne);
 
-        streamI.close();
-        streamO.close();
+        String msg1 = messageOne.toUpperCase();
+        DatagramPacket response1 = new DatagramPacket(msg1.getBytes(), msg1.getBytes().length, clientAddress, clientPort);
+        socket.send(response1);
+
+        socket.close();
     }
 
     public static void main(String[] args){
