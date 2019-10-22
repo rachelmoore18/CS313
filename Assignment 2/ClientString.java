@@ -2,7 +2,7 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.net.*;
 
-public class Client2 {
+public class ClientString {
 
     String hostname = "127.0.0.1";
     int port = 5000;
@@ -13,33 +13,32 @@ public class Client2 {
 
 
 
-    public Client2() throws IOException, SocketTimeoutException, InterruptedException {
-        System.out.println("Client Started");
+    public ClientString() throws IOException, SocketTimeoutException, InterruptedException {
+        System.out.println("ClientString Started");
         IPAddress = InetAddress.getByName(hostname);
         socket = new DatagramSocket();
         buffer = new byte[512];
     }
 
     public void SendPacket() throws IOException {
-
-        String Second = "220";
-        DatagramPacket request2 = new DatagramPacket( Second.getBytes(), Second.getBytes().length, IPAddress, port);
-        socket.send(request2);
+        String First = "text";
+        DatagramPacket request1 = new DatagramPacket( First.getBytes(), First.getBytes().length, IPAddress, port);
+        socket.send(request1);
 
     }
 
     public void ClientReceive() throws IOException, ClassNotFoundException {
-        DatagramPacket response2 = new DatagramPacket(buffer, buffer.length);
-        socket.receive(response2);
-        String messageTwo = new String(buffer, 0, response2.getLength());
+        DatagramPacket response = new DatagramPacket(buffer, buffer.length);
+        socket.receive(response);
+        String messageOne = new String(buffer, 0, response.getLength());
 
-        System.out.println("Message Received: " + messageTwo);
+        System.out.println("Message Received: " + messageOne);
     }
 
 
     public static void main(String[] args){
         try {
-            Client2 client = new Client2();
+            ClientString client = new ClientString();
             client.SendPacket();
             client.ClientReceive();
         }catch(Exception e){e.printStackTrace();}

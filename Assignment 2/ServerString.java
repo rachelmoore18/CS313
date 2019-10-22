@@ -1,12 +1,12 @@
 import java.io.IOException;
 import java.net.*;
 
-public class Server {
+public class ServerString {
 
     private DatagramSocket socket;
     private byte[] buffer;
 
-    public Server() throws IOException {
+    public ServerString() throws IOException {
 
         System.out.println("Waiting for client");
 
@@ -37,7 +37,7 @@ public class Server {
 
     public static void main(String[] args){
         try {
-            Server server = new Server();
+            ServerString server = new ServerString();
 
             while(true){
                 server.ServerReceive();
